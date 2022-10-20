@@ -8,8 +8,8 @@ package Server {
 	}
 	
 	class ServerThread {
-		public Package login()
-		public void signUp()
+		public void login(User user) throws UserDoesNotExistException, IncorrectPasswordException
+		public void signUp(User user) throws EmailExistsException, UserAlreadyExistsException
 	}
 	
 	abstract UserFactoryServer {
@@ -21,8 +21,8 @@ package Server {
 	}
 	
 	class DAOServer {
-		public User login(String username)
-		public void signUp(User user)
+		public User login(String username) throws UserDoesNotExistException, IncorrectPasswordException
+		public void signUp(User user) throws EmailExistsException, UserAlreadyExistsException
 	}
 	
 	class MasterConnection {
@@ -45,11 +45,11 @@ package Client {
 	}
 
 	class LoginController {
-		public void login()
+		public void login() throws Incorrect UsernameException
 	}
 	
 	class SignUpController {
-		public void signUp()
+		public void signUp(User user)
 	}
 	
 	class ApplicationWindowController {
@@ -83,14 +83,13 @@ package Lib {
 	class Package {
 		User user
 		Action action
-		String message
-		boolean error
+		Integer message
 	}
 
 	interface Userable {
 		public Package login(User user)
 		public User login(String username)
-		public void signUp()
+		public void signUp(User user)
 	}
 	
 	class User {
@@ -114,14 +113,16 @@ package Lib {
 		ADMIN
 	}
 
-	package Exceptions {
-		class SQLException{}
-		class UserDoesNotExistException{}
-		class IncorrectPasswordException{}
-		class TimeOutException{}
-		class UserAlreadyExistsException{}
-	}
+}
 
+package Exceptions {
+	class ServerException{}
+	class UserDoesNotExistException{}
+	class IncorrectUsernameException{}
+	class IncorrectPasswordException{}
+	class TimeOutException{}
+	class UserAlreadyExistsException{}
+	class EmailAlreadyExistsException{}
 }
 
 UserImplementation --> Package
@@ -162,11 +163,13 @@ Client.Socket --> UserImplementation
 Client.InputStream --> UserImplementation
 Client.OutputStream --> UserImplementation
 
-SQLException 		<-- DAOServer
-TimeOutException 	<-- UserImplementation
+ServerException <-- DAOServer
+TimeOutException <-- UserImplementation
 UserAlreadyExistsException <-- SignUpController
+EmailAlreadyExistsException <-- SignUpController
 UserDoesNotExistException <-- LoginController
 IncorrectPasswordException <-- LoginController
+IncorrectUsernameException <-- LoginController
 
 Package --> User
 User --> UserPrivilege
