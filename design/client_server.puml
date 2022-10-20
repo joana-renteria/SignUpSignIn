@@ -25,7 +25,7 @@ package Server {
 		public void signUp(User user)
 	}
 	
-	class MasterDBConnection {
+	class MasterConnection {
 		public void openConnection()
 		public void closeConnection()
 	}
@@ -113,14 +113,15 @@ package Lib {
 		USER
 		ADMIN
 	}
-}
 
-package Exceptions {
-	class SQLException{}
-	class UserDoesNotExistException{}
-	class IncorrectPasswordException{}
-	class TimeOutException{}
-	class UserAlreadyExistsException{}
+	package Exceptions {
+		class SQLException{}
+		class UserDoesNotExistException{}
+		class IncorrectPasswordException{}
+		class TimeOutException{}
+		class UserAlreadyExistsException{}
+	}
+
 }
 
 UserImplementation --> Package
@@ -134,7 +135,8 @@ Userable <-- ApplicationWindowController
 Userable <|.. UserImplementation
 
 Pool <-- DAOServer
-DAOServer --> DataBase
+DAOServer --> MasterConnection
+MasterConnection --> DataBase
 UserFactoryServer <-- ServerThread
 UserFactoryServer --> DAOServer
 DAOServer ..|> Userable
