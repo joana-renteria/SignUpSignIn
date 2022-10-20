@@ -1,0 +1,173 @@
+@startuml
+left to right direction
+skinparam linetype ortho
+
+package Server {
+	class ApplicationServer {
+		public void main()
+	}
+	
+	class ServerThread {
+		public Package login()
+		public void signUp()
+	}
+	
+	abstract UserFactoryServer {
+		
+	}
+	
+	class Pool {
+		
+	}
+	
+	class DAOServer {
+		public User login(String username)
+		public void signUp(User user)
+	}
+	
+	class MasterDBConnection {
+		public void openConnection()
+		public void closeConnection()
+	}
+
+	class Server.Socket{}
+	class Server.InputStream{}
+	class Server.OutputStream{}
+}
+
+package Client {
+	class JavaFX {
+		
+	}
+
+	class ApplicationClient {
+		public void main()
+	}
+
+	class LoginController {
+		public void login()
+	}
+	
+	class SignUpController {
+		public void signUp()
+	}
+	
+	class ApplicationWindowController {
+		public void logout()
+	}
+	
+	class UserImplementation {
+		
+	}
+	
+	abstract UserFactoryClient {
+		
+	}
+
+	class Client.Socket{}
+	class Client.InputStream{}
+	class Client.OutputStream{}
+}
+
+package DataBase <<Database>> {
+	
+}
+
+package Lib {
+	enum Action {
+		LOGIN
+		REGISTER
+		MODIFY
+	}
+	
+	class Package {
+		User user
+		Action action
+		String message
+		boolean error
+	}
+
+	interface Userable {
+		public Package login(User user)
+		public User login(String username)
+		public void signUp()
+	}
+	
+	class User {
+		Integer id
+		String login
+		String email
+		String fullName
+		UserStatus status
+		UserPrivilege privilege
+		String password
+		Timestamp lastPasswordChange
+	}
+	
+	enum UserStatus {
+		ENABLED
+		DISABLED
+	}
+	
+	enum UserPrivilege {
+		USER
+		ADMIN
+	}
+}
+
+package Exceptions {
+	class SQLException{}
+	class UserDoesNotExistException{}
+	class IncorrectPasswordException{}
+	class TimeOutException{}
+	class UserAlreadyExistsException{}
+}
+
+UserImplementation --> Package
+
+Package --> Action
+
+Userable <-- LoginController
+Userable <-- SignUpController
+Userable <-- ApplicationWindowController
+
+Userable <|.. UserImplementation
+
+Pool <-- DAOServer
+DAOServer --> DataBase
+UserFactoryServer <-- ServerThread
+UserFactoryServer --> DAOServer
+DAOServer ..|> Userable
+ServerThread --> Userable
+ServerThread --> Package
+ApplicationServer --> ServerThread
+
+ApplicationClient --> ApplicationWindowController
+ApplicationClient --> SignUpController
+ApplicationClient --> LoginController
+
+UserFactoryClient <-- UserImplementation
+UserFactoryClient --> ApplicationClient
+
+ApplicationClient --|> JavaFX
+
+Server.Socket --> 		ServerThread
+Server.ServerSocket --> ServerThread
+Server.InputStream --> 	ServerThread
+Server.OutputStream -->	ServerThread
+
+Client.Socket --> UserImplementation
+Client.InputStream --> UserImplementation
+Client.OutputStream --> UserImplementation
+
+SQLException 		<-- DAOServer
+TimeOutException 	<-- UserImplementation
+UserAlreadyExistsException <-- SignUpController
+UserDoesNotExistException <-- LoginController
+IncorrectPasswordException <-- LoginController
+
+Package --> User
+User --> UserPrivilege
+User --> UserStatus
+
+@enduml
