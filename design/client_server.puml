@@ -57,7 +57,10 @@ package Client {
 	}
 	
 	class UserImplementation {
-		
+		public User login(String username)
+			throws ServerException
+		public void signUp(User user)
+			throws IncorrectPasswordException, TimeOutException, UserAlreadyExistsException, EmailAlreadyExistsException
 	}
 	
 	abstract UserFactoryClient {
@@ -87,9 +90,10 @@ package Lib {
 	}
 
 	interface Userable {
-		public Package login(User user)
 		public User login(String username)
+			throws ServerException, IncorrectPasswordException, UserDoesNotExistsException, TimeOutException
 		public void signUp(User user)
+			throws ServerException, IncorrectPasswordException, TimeOutException, UserAlreadyExistsException, EmailAlreadyExistsException
 	}
 	
 	class User {
@@ -112,13 +116,22 @@ package Lib {
 		USER
 		ADMIN
 	}
+	
+	enum Message {
+		OK
+		SERVERERROR
+		TIMEOUT
+		USERALREADYEXISTS
+		EMAILALREADYEXISTS
+		INCORRECTPASSWORD
+		USERDOESNOTEXISTS
+	}
 
 }
 
 package Exceptions {
 	class ServerException{}
 	class UserDoesNotExistException{}
-	class IncorrectUsernameException{}
 	class IncorrectPasswordException{}
 	class TimeOutException{}
 	class UserAlreadyExistsException{}
@@ -145,14 +158,17 @@ ServerThread --> Userable
 ServerThread --> Package
 ApplicationServer --> ServerThread
 
-ApplicationClient --> ApplicationWindowController
-ApplicationClient --> SignUpController
-ApplicationClient --> LoginController
+ApplicationClient -right-> ApplicationWindowController
+ApplicationClient -right-> SignUpController
+ApplicationClient -right-> LoginController
+
+ApplicationWindowController -[hidden]- SignUpController
+SignUpController -[hidden]- LoginController
 
 UserFactoryClient <-- UserImplementation
 UserFactoryClient --> ApplicationClient
 
-ApplicationClient --|> JavaFX
+ApplicationClient -right-|> JavaFX
 
 Server.Socket --> 		ServerThread
 Server.ServerSocket --> ServerThread
