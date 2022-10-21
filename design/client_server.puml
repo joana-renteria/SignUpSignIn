@@ -8,7 +8,7 @@ package Server {
 	}
 	
 	class ServerThread {
-		public void login(User user) throws UserDoesNotExistException, IncorrectPasswordException
+		public void login(User user) throws UserDoesNotExistException, IncorrectUserException, IncorrectPasswordException
 		public void signUp(User user) throws EmailExistsException, UserAlreadyExistsException
 	}
 	
@@ -21,7 +21,7 @@ package Server {
 	}
 	
 	class DAOServer {
-		public User login(String username) throws UserDoesNotExistException, IncorrectPasswordException
+		public User login(String username) throws UserDoesNotExistException, IncorrectUserException, IncorrectPasswordException
 		public void signUp(User user) throws EmailExistsException, UserAlreadyExistsException
 	}
 	
@@ -45,11 +45,11 @@ package Client {
 	}
 
 	class LoginController {
-		public void login() throws Incorrect UsernameException
+		public void login() throws IncorrectPasswordException, UserDoesNotExistException, IncorrectUserException, TimeOutException
 	}
 	
 	class SignUpController {
-		public void signUp(User user)
+		public void signUp(User user) throws IncorrectPasswordException, UserAlreadyExistsException, TimeOutException, EmailAlreadyExistsException
 	}
 	
 	class ApplicationWindowController {
@@ -57,10 +57,8 @@ package Client {
 	}
 	
 	class UserImplementation {
-		public User login(String username)
-			throws ServerException
-		public void signUp(User user)
-			throws IncorrectPasswordException, TimeOutException, UserAlreadyExistsException, EmailAlreadyExistsException
+		public User login(String username) throws ServerException
+		public void signUp(User user) throws IncorrectPasswordException, TimeOutException, UserAlreadyExistsException, EmailAlreadyExistsException
 	}
 	
 	abstract UserFactoryClient {
@@ -80,20 +78,17 @@ package Lib {
 	enum Action {
 		LOGIN
 		REGISTER
-		MODIFY
 	}
 	
 	class Package {
 		User user
 		Action action
-		Integer message
+		Message message
 	}
 
 	interface Userable {
-		public User login(String username)
-			throws ServerException, IncorrectPasswordException, UserDoesNotExistsException, TimeOutException
-		public void signUp(User user)
-			throws ServerException, IncorrectPasswordException, TimeOutException, UserAlreadyExistsException, EmailAlreadyExistsException
+		public User login(String username) throws ServerException, IncorrectPasswordException, UserDoesNotExistException, IncorrectUserException, TimeOutException
+		public void signUp(User user) throws ServerException, IncorrectPasswordException, TimeOutException, UserAlreadyExistsException, EmailAlreadyExistsException
 	}
 	
 	class User {
@@ -135,12 +130,14 @@ package Exceptions {
 	class IncorrectPasswordException{}
 	class TimeOutException{}
 	class UserAlreadyExistsException{}
+	class IncorrectUserException{}
 	class EmailAlreadyExistsException{}
 }
 
 UserImplementation --> Package
 
 Package --> Action
+Package --> Message
 
 Userable <-- LoginController
 Userable <-- SignUpController
@@ -158,17 +155,17 @@ ServerThread --> Userable
 ServerThread --> Package
 ApplicationServer --> ServerThread
 
-ApplicationClient -right-> ApplicationWindowController
-ApplicationClient -right-> SignUpController
-ApplicationClient -right-> LoginController
+ApplicationClient --> ApplicationWindowController
+ApplicationClient --> SignUpController
+ApplicationClient --> LoginController
 
-ApplicationWindowController -[hidden]- SignUpController
-SignUpController -[hidden]- LoginController
+ApplicationWindowController -- SignUpController
+SignUpController -- LoginController
 
 UserFactoryClient <-- UserImplementation
 UserFactoryClient --> ApplicationClient
 
-ApplicationClient -right-|> JavaFX
+ApplicationClient --|> JavaFX
 
 Server.Socket --> 		ServerThread
 Server.ServerSocket --> ServerThread
@@ -184,8 +181,9 @@ TimeOutException <-- UserImplementation
 UserAlreadyExistsException <-- SignUpController
 EmailAlreadyExistsException <-- SignUpController
 UserDoesNotExistException <-- LoginController
+IncorrectUserException <-- LoginController
 IncorrectPasswordException <-- LoginController
-IncorrectUsernameException <-- LoginController
+IncorrectUserException <-- SignUpController
 
 Package --> User
 User --> UserPrivilege
