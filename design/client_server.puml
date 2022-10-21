@@ -45,14 +45,17 @@ package Client {
 	}
 
 	class LoginController {
+		public void initStage(Parent root)
 		public void login() throws IncorrectPasswordException, UserDoesNotExistException, IncorrectUserException, TimeOutException
 	}
 	
 	class SignUpController {
+		public void initStage(Parent root)
 		public void signUp(User user) throws IncorrectPasswordException, UserAlreadyExistsException, TimeOutException, EmailAlreadyExistsException
 	}
 	
 	class ApplicationWindowController {
+		public void initStage(Parent root)
 		public void logout()
 	}
 	
@@ -99,7 +102,6 @@ package Lib {
 		UserStatus status
 		UserPrivilege privilege
 		String password
-		Timestamp lastPasswordChange
 	}
 	
 	enum UserStatus {
